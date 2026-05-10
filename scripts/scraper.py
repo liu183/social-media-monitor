@@ -71,6 +71,70 @@ def build_gallery_dl_config(platform, cookies):
     return config
 
 
+def scrape_videos_with_ytdlp(username, platform, output_dir, cookies=None, max_items=15):
+    """使用 yt-dlp 下载视频"""
+    if platform != "x":
+        return []  # 目前只支持 X
+
+    url = f"https://x.com/{username}"
+    video_dir = os.path.join(output_dir, "videos", username)
+    os.makedirs(video_dir, exist_ok=True)
+
+    cmd = [
+        "yt-dlp",
+        "--no-playlist",
+        "--no-overwrites",
+        "-o", os.path.join(video_dir, "%(id)s.%(ext)s"),
+        "--max-downloads", str(max_items),
+        "--match-filter", "duration>0",  # 只下载有视频的
+        url
+    ]
+
+    # 添加 cookies
+    if cookies:
+        cookie_str = "; ".join(f"{k}={v}" for k, v in cookies.items())
+        cmd.extend(["--cookies-from-browser", "chrome"])  # 备用
+        # 写入 cookie 文件
+        cookie_file = os.path.join(output_dir, f".cookies-{username}.txt")
+        with open(cookie_file, "w") as f:
+            f.write(f".x.com\tTRUE\t/\tFALSE\t0\tauth_token\t{cookies.get('auth_token', '')}\n")
+            f.write(f".x.com\tTRUE\t/\tFALSE\t0\tct0\t{cookies.get('ct0', '')}\n")
+        cmd.extend(["--cookies", cookie_file])
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+        # 扫描下载的视频文件
+        videos = []
+        if os.path.exists(video_dir):
+            for f in os.listdir(video_dir):
+                if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov")):
+                    fpath = os.path.join(video_dir, f)
+                    videos.append({
+                        "path": fpath,
+                        "filename": f,
+                        "ext": os.path.splitext(f)[1].lower(),
+                        "size": os.path.getsize(fpath),
+                        "is_video": True,
+                        "metadata": {"source": "yt-dlp"},
+                    })
+        return videos
+    except subprocess.TimeoutExpired:
+        print(f"  [WARN] yt-dlp 视频下载超时")
+        return []
+    except FileNotFoundError:
+        print(f"  [WARN] yt-dlp 未安装")
+        return []
+    finally:
+        cookie_file = os.path.join(output_dir, f".cookies-{username}.txt")
+        if os.path.exists(cookie_file):
+            os.remove(cookie_file)
+
+
 def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None):
     """
     使用 gallery-dl 抓取用户媒体
@@ -117,6 +181,15 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
             # 扫描下载的文件
             downloaded = scan_downloaded_files(user_dir)
             print(f"  [完成] 下载 {len(downloaded)} 个文件")
+
+            # 对 X 账号额外用 yt-dlp 下载视频
+            if platform == "x" and cookies:
+                print(f"  [视频] 用 yt-dlp 下载视频...")
+                videos = scrape_videos_with_ytdlp(username, platform, output_dir, cookies)
+                if videos:
+                    downloaded.extend(videos)
+                    print(f"  [视频] 额外下载 {len(videos)} 个视频")
+
             return downloaded
         else:
             stderr = result.stderr[:500] if result.stderr else ""
