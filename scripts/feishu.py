@@ -329,3 +329,71 @@ def push_to_bitable(bitable, entries):
         batch = records[i:i+500]
         bitable.add_records_batch(batch)
         time.sleep(1)  # 避免频率限制
+
+
+def send_post_to_feishu(webhook, bot, entries, max_images_per_post=9):
+    """
+    将每个帖子作为富文本消息发送到飞书群
+    包含：帖子说明 + 图片 + 原文链接 + 视频链接
+    """
+    if not entries:
+        return
+
+    for entry in entries:
+        title = entry.get("title", "").strip()
+        link = entry.get("link", "")
+        account_name = entry.get("account_name", entry.get("username", ""))
+        platform = entry.get("platform", "")
+        images = entry.get("local_files", [])
+        videos = entry.get("videos", [])
+        image_files = [f for f in images if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))]
+        video_files = [f for f in images if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))]
+
+        # 构建富文本内容
+        content_lines = []
+
+        # 第一行：账号信息和说明
+        header_parts = []
+        if platform == "x":
+            header_parts.append(f"🐦 @{account_name}")
+        else:
+            header_parts.append(f"📷 @{account_name}")
+
+        if title:
+            header_parts.append(title)
+
+        content_lines.append([{"tag": "text", "text": " | ".join(header_parts)}])
+
+        # 上传图片并添加到富文本
+        if bot and image_files:
+            img_keys = []
+            for img_path in image_files[:max_images_per_post]:
+                image_key = bot.upload_image(img_path)
+                if image_key:
+                    img_keys.append(image_key)
+                time.sleep(0.3)
+
+            if img_keys:
+                img_line = []
+                for key in img_keys:
+                    img_line.append({"tag": "img", "image_key": key})
+                content_lines.append(img_line)
+
+        # 原文链接
+        if link:
+            content_lines.append([
+                {"tag": "text", "text": "🔗 "},
+                {"tag": "a", "text": "查看原文", "href": link}
+            ])
+
+        # 视频链接
+        if video_files:
+            content_lines.append([{"tag": "text", "text": f"🎬 包含 {len(video_files)} 个视频"}])
+            for vf in video_files[:3]:
+                fname = os.path.basename(vf)
+                content_lines.append([{"tag": "text", "text": f"  📹 {fname}"}])
+
+        # 发送富文本
+        post_title = f"@{account_name}"
+        webhook.send_rich_text(post_title, content_lines)
+        time.sleep(1)  # 避免频率限制
