@@ -1,173 +1,697 @@
-# 要监控的账号列表
-# platform: x (Twitter) 或 instagram
-
 accounts:
-  # === X (Twitter) 账号 ===
-  - platform: x
-    username: "Daisy1004"
-    name: "Daisy"
-
-  - platform: x
-    username: "berryxgxm"
-    name: "Berry"
-
-  - platform: x
-    username: "lilithcoser"
-    name: "Lilith Coser"
-
-  - platform: x
-    username: "stacygodbout"
-    name: "Stacy Godbout"
-
-  - platform: x
-    username: "_semudin"
-    name: "Semudin"
-
-  - platform: x
-    username: "iyum_des_62_"
-    name: "Iyum"
-
-  - platform: x
-    username: "nhinhi2x8"
-    name: "Nhi Nhi"
-
-  - platform: x
-    username: "NgnThy11681"
-    name: "Nguyen Thi Thy"
-
-  - platform: x
-    username: "nhugdam197"
-    name: "Nhug Dam"
-
-  - platform: x
-    username: "duyn1803"
-    name: "Duy"
-
-  - platform: x
-    username: "Ththao05na"
-    name: "Thao"
-
-  - platform: x
-    username: "MeoMei298984"
-    name: "Meo Mei"
-
-  - platform: x
-    username: "thanhhan01"
-    name: "Thanh Han"
-
-  - platform: x
-    username: "baoanhhne"
-    name: "Bao Anh"
-
-  - platform: x
-    username: "pm_nhun04"
-    name: "PM Nhun"
-
-  - platform: x
-    username: "bay_michal93244"
-    name: "Bay Michal"
-
-  - platform: x
-    username: "thuydungnee"
-    name: "Thuy Dung"
-
-  - platform: x
-    username: "baongoc_anh"
-    name: "Bao Ngoc Anh"
-
-  - platform: x
-    username: "condinunglon2k3"
-    name: "Con Di Nung"
-
-  - platform: x
-    username: "huyendiep01"
-    name: "Huyen Diep"
-
-  - platform: x
-    username: "daothilann"
-    name: "Dao Thi Lan"
-
-  - platform: x
-    username: "haanhda"
-    name: "Ha Anh Da"
-
-  - platform: x
-    username: "thaoan111"
-    name: "Thao An"
-
-  - platform: x
-    username: "SaChucuti"
-    name: "Sa Chu Cu Ti"
-
-  - platform: x
-    username: "HThanh342"
-    name: "H Thanh"
-
-  - platform: x
-    username: "quyen1203_"
-    name: "Quyen"
-
-  - platform: x
-    username: "MeAni03"
-    name: "Me Ani"
-
-  - platform: x
-    username: "Chuxinh1198"
-    name: "Chu Xinh"
-
-  - platform: x
-    username: "hong_anh2k_"
-    name: "Hong Anh"
-
-  - platform: x
-    username: "ThuyZam286"
-    name: "Thuy Zam"
-
-  - platform: x
-    username: "ngocanh01x"
-    name: "Ngoc Anh"
-
-  - platform: x
-    username: "DunggH1593"
-    name: "Dung"
-
-  - platform: x
-    username: "thanhtrax1"
-    name: "Thanh Tra"
-
-  - platform: x
-    username: "Thuanzone"
-    name: "Thuan Zone"
-
-  - platform: x
-    username: "mr_hentaiz"
-    name: "Mr Hentaiz"
-
-  - platform: x
-    username: "huyendam18"
-    name: "Huyen Dam"
-
-  - platform: x
-    username: "lvsbians"
-    name: "Lvsbians"
-
-  - platform: x
-    username: "QunhTrn414"
-    name: "Quynh Tran"
-
-  - platform: x
-    username: "Mr_Owao"
-    name: "Mr Owao"
-
-  - platform: x
-    username: "Ngocbich141"
-    name: "Ngoc Bich"
-
-  - platform: x
-    username: "Fxtyoo"
-    name: "Fxtyoo"
-
-  # === Instagram 账号 ===
-  - platform: instagram
-    username: "carrieqinnn"
-    name: "Carrie Qin"
+- platform: x
+  username: Daisy1004
+  name: Daisy
+- platform: x
+  username: berryxgxm
+  name: Berry
+- platform: x
+  username: lilithcoser
+  name: Lilith Coser
+- platform: x
+  username: stacygodbout
+  name: Stacy Godbout
+- platform: x
+  username: _semudin
+  name: Semudin
+- platform: x
+  username: iyum_des_62_
+  name: Iyum
+- platform: x
+  username: nhinhi2x8
+  name: Nhi Nhi
+- platform: x
+  username: NgnThy11681
+  name: Nguyen Thi Thy
+- platform: x
+  username: nhugdam197
+  name: Nhug Dam
+- platform: x
+  username: duyn1803
+  name: Duy
+- platform: x
+  username: Ththao05na
+  name: Thao
+- platform: x
+  username: MeoMei298984
+  name: Meo Mei
+- platform: x
+  username: thanhhan01
+  name: Thanh Han
+- platform: x
+  username: baoanhhne
+  name: Bao Anh
+- platform: x
+  username: pm_nhun04
+  name: PM Nhun
+- platform: x
+  username: bay_michal93244
+  name: Bay Michal
+- platform: x
+  username: thuydungnee
+  name: Thuy Dung
+- platform: x
+  username: baongoc_anh
+  name: Bao Ngoc Anh
+- platform: x
+  username: condinunglon2k3
+  name: Con Di Nung
+- platform: x
+  username: huyendiep01
+  name: Huyen Diep
+- platform: x
+  username: daothilann
+  name: Dao Thi Lan
+- platform: x
+  username: haanhda
+  name: Ha Anh Da
+- platform: x
+  username: thaoan111
+  name: Thao An
+- platform: x
+  username: SaChucuti
+  name: Sa Chu Cu Ti
+- platform: x
+  username: HThanh342
+  name: H Thanh
+- platform: x
+  username: quyen1203_
+  name: Quyen
+- platform: x
+  username: MeAni03
+  name: Me Ani
+- platform: x
+  username: Chuxinh1198
+  name: Chu Xinh
+- platform: x
+  username: hong_anh2k_
+  name: Hong Anh
+- platform: x
+  username: ThuyZam286
+  name: Thuy Zam
+- platform: x
+  username: ngocanh01x
+  name: Ngoc Anh
+- platform: x
+  username: DunggH1593
+  name: Dung
+- platform: x
+  username: thanhtrax1
+  name: Thanh Tra
+- platform: x
+  username: Thuanzone
+  name: Thuan Zone
+- platform: x
+  username: mr_hentaiz
+  name: Mr Hentaiz
+- platform: x
+  username: huyendam18
+  name: Huyen Dam
+- platform: x
+  username: lvsbians
+  name: Lvsbians
+- platform: x
+  username: QunhTrn414
+  name: Quynh Tran
+- platform: x
+  username: Mr_Owao
+  name: Mr Owao
+- platform: x
+  username: Ngocbich141
+  name: Ngoc Bich
+- platform: x
+  username: Fxtyoo
+  name: Fxtyoo
+- platform: instagram
+  username: carrieqinnn
+  name: Carrie Qin
+- platform: x
+  username: NnyxieYT
+  name: nixie
+- platform: x
+  username: baamgu
+  name: Rina 𖣂
+- platform: x
+  username: virtualtorii
+  name: tori ♡
+- platform: x
+  username: animeasti
+  name: ‍ ‍ ‍ ‍ 𝔄𝔰𝔱𝔞 𓆩︎༒𓆪
+- platform: x
+  username: qiandaiyiyu
+  name: Qiandai以宇
+- platform: x
+  username: angelicatlol68
+  name: angelica *･ﾟ✧
+- platform: x
+  username: abecker_cos
+  name: Alina Becker 🍑
+- platform: x
+  username: HidoriRoseCos
+  name: Hidori Rose Cosplay
+- platform: x
+  username: Botchi765
+  name: ぼっち
+- platform: x
+  username: kitirna
+  name: rina
+- platform: x
+  username: winterwifey
+  name: winter ⦮ ⦯
+- platform: x
+  username: toysizedd
+  name: s 🫧
+- platform: x
+  username: PokemonRestocks
+  name: Pokemon TCG Restocks & News
+- platform: x
+  username: yua_mikami
+  name: 三上悠亜
+- platform: x
+  username: NhungNgc563
+  name: Ngọc Nhung 🦌
+- platform: x
+  username: Nguyetque678
+  name: Nguyệt Anh
+- platform: x
+  username: BoleroPo83701
+  name: ki gắn 3 bu thíc nuốt lưỡi
+- platform: x
+  username: cz_binance
+  name: CZ 🔶 BNB
+- platform: x
+  username: binance
+  name: Binance
+- platform: x
+  username: surythuytrang
+  name: Thùy Trang
+- platform: x
+  username: Ddaraku23
+  name: Thảo Bê 🔞
+- platform: x
+  username: DiemMySexy
+  name: Diễm My
+- platform: x
+  username: MFeehilyMusic
+  name: Markus Feehily Net
+- platform: x
+  username: naughty_bellaa
+  name: Bella 💜
+- platform: x
+  username: novaruu_
+  name: novaruu
+- platform: x
+  username: PrematureGooner
+  name: PrematureGooner
+- platform: x
+  username: TrMy01x
+  name: Trà My nèe
+- platform: x
+  username: Thuy_an07
+  name: An Thu
+- platform: x
+  username: htram01x
+  name: Huyền Trâm damdang 😈
+- platform: x
+  username: Gacha_Zone
+  name: Gacha Zone
+- platform: x
+  username: umekoj0910
+  name: ° ˖ ✧ 𝐔𝐦𝐞𝐤𝐨 𝐉 ✧˖ ° PF44🇹🇼 AFATH26🇹🇭
+- platform: x
+  username: GenshinImpact
+  name: Genshin Impact
+- platform: x
+  username: NASA
+  name: NASA
+- platform: x
+  username: AzurLane_EN
+  name: Azur Lane Official
+- platform: x
+  username: bibimelody2
+  name: Melody 🖤❤️
+- platform: x
+  username: nyanchannguyen
+  name: Nyan chó cái thích show lồn
+- platform: x
+  username: Azami_1110
+  name: Azami 💕
+- platform: x
+  username: aqua_cosplay
+  name: Aqua水淼
+- platform: x
+  username: MissWarmJ
+  name: MissWarmJ Next Con：Dokomi Booth 5H04 🇩🇪
+- platform: x
+  username: Dishwasher1910
+  name: DISH🫧DOKOMI2026
+- platform: x
+  username: WarmJMiss
+  name: MissWarmJ meet me at Dokomi 2026 Germany
+- platform: x
+  username: Kuukow002
+  name: 𝑴𝒐𝒓𝒊 𝑲𝒖𝒖𝒌𝒐🍀
+- platform: x
+  username: _KAWAYAMI_
+  name: 幼愛YUME
+- platform: x
+  username: hngan_01
+  name: Ngân Hồng
+- platform: x
+  username: Yumkitty1
+  name: YumYuumi 📍
+- platform: x
+  username: fairycreamgirl
+  name: Talia ୨୧ FREE OF
+- platform: x
+  username: TelariLove13
+  name: Telari Love
+- platform: x
+  username: suziee_jackson
+  name: 𓆩Suzie𓆪💖HOT WEEK ON OF 💖
+- platform: x
+  username: sweet_girrrls
+  name: Sweet whispers
+- platform: x
+  username: luna_lorial
+  name: Gentle Cutie💜
+- platform: x
+  username: GalaaDiamond
+  name: Dina Klay
+- platform: x
+  username: momo_queen12
+  name: Goon queen
+- platform: x
+  username: H_panels
+  name: 💦🔞𝙃𝙞𝙢𝙖𝙧𝙞 ♡🔞🔥
+- platform: x
+  username: Peach_Hills
+  name: Peach Hills Game
+- platform: x
+  username: SakayanagiPosts
+  name: Sakayanagi
+- platform: x
+  username: Emiko2D
+  name: '★ : 𝙎𝘾𝘼𝙈𝘽𝙍𝘼𝙏 𝙀𝙈𝙄𝙆𝙊 💗🎀🍭'
+- platform: x
+  username: HypnoAi
+  name: Mommy Dahlia 💞
+- platform: x
+  username: Porn_Addict_G
+  name: Porn Addict Goddess 💖
+- platform: x
+  username: kaminaflower
+  name: Kamina 🌸 FREE ONLYFANS
+- platform: x
+  username: pepe_fgm
+  name: Pepe Meme
+- platform: x
+  username: ladygaga
+  name: Lady Gaga
+- platform: x
+  username: Nga_Pham_97
+  name: Nga Phạm | Anna
+- platform: x
+  username: IYFWorld
+  name: International Youth Federation
+- platform: x
+  username: e_alrajab
+  name: Eman alrajab إيمان الرجب
+- platform: x
+  username: Twaiq93
+  name: طويق | نوره
+- platform: x
+  username: noah45688
+  name: Noah
+- platform: x
+  username: Gradjanin5
+  name: Gradjanin5
+- platform: x
+  username: GemOfKingdom
+  name: Gem Of Kingdom
+- platform: x
+  username: JokersHQ
+  name: Olivia Joker
+- platform: x
+  username: piyudas871
+  name: QUEEN
+- platform: x
+  username: Vienpham1988
+  name: Phạm Viên Viên
+- platform: x
+  username: AoAo47029
+  name: Fallen angel (✱,✱)
+- platform: x
+  username: QUANHONGSINH
+  name: HỒNG SINH QUÁN
+- platform: x
+  username: thi_antony
+  name: Ngọc Thi | Medici
+- platform: x
+  username: erfan_mhi
+  name: Erfan Miahi
+- platform: x
+  username: Tradermot82
+  name: Tradermot
+- platform: x
+  username: PersonalThai
+  name: Personal Thailand
+- platform: x
+  username: hoctrading
+  name: Trung.btc
+- platform: x
+  username: MynhierMar882
+  name: Mx Unii
+- platform: x
+  username: big_zehrry
+  name: Zehrry🌚
+- platform: x
+  username: charanthukran
+  name: CHARAN SINGH
+- platform: x
+  username: ThePopuleria
+  name: Populeria
+- platform: x
+  username: emreguzzel
+  name: Emre Güzel
+- platform: x
+  username: kormoeth
+  name: K⭕RMO
+- platform: x
+  username: AimeeCrossk529
+  name: Trà My Idol❤️
+- platform: x
+  username: Luhlelo22
+  name: Luhle
+- platform: x
+  username: ngothanhegn1990
+  name: Thanh Ngo
+- platform: x
+  username: iSamarthX
+  name: Samarth.
+- platform: x
+  username: RenukaRiya276
+  name: RenukaUpadhyay
+- platform: x
+  username: FusionistRSA
+  name: Uncle
+- platform: x
+  username: _KingBash_
+  name: Animakoni
+- platform: x
+  username: ClementNno388
+  name: Clement Nnoka
+- platform: x
+  username: XAS_GAMING
+  name: XAS_GAMING
+- platform: x
+  username: truonggiangle99
+  name: Giang
+- platform: x
+  username: ThissSophie
+  name: Sophie
+- platform: x
+  username: _pmjn_
+  name: _pmjn_
+- platform: x
+  username: ZiriVibe2
+  name: Zîrî
+- platform: x
+  username: meikkp
+  name: Neye 💞
+- platform: x
+  username: Dearxlimmm
+  name: 𝗗𝗲𝗮𝗿 𝗦𝗹𝗶𝗺 🥶
+- platform: x
+  username: Thong_candy89
+  name: Candy79
+- platform: x
+  username: Alie1109
+  name: Hoàng Châu🌈| MemeMax⚡️
+- platform: x
+  username: gemsmorro
+  name: gemsmorro
+- platform: x
+  username: vietdungpham283
+  name: Viet Dung Pham
+- platform: x
+  username: VuAnh1747432
+  name: Vu Anh π² 🤖ボッ Zetarium
+- platform: x
+  username: newsfeed_1996
+  name: Tuấn Anh
+- platform: x
+  username: cuong0609
+  name: Bin Crypto
+- platform: x
+  username: DavidLe6978
+  name: luatcrypto
+- platform: x
+  username: tr23698_nk87
+  name: Thanh Vân | Jenny
+- platform: x
+  username: torokuma3
+  name: Only Blue
+- platform: x
+  username: Nm25492159
+  name: 에이미
+- platform: x
+  username: rssbihar9mm
+  name: SANI
+- platform: x
+  username: infoinletcom
+  name: INFO INLET
+- platform: x
+  username: snowyxq1
+  name: snowy
+- platform: x
+  username: sera_nie
+  name: Sera (❖,❖)🌸👑
+- platform: x
+  username: pheeluong
+  name: pheeluong
+- platform: x
+  username: gkingsventures
+  name: Gkings23 Wills💎 90s 🎥 🎬
+- platform: x
+  username: zyro_wave
+  name: Nami(ナミ)
+- platform: x
+  username: Escamilla49
+  name: Escamilla
+- platform: x
+  username: josephineweb3
+  name: Josephine (sol/acc)
+- platform: x
+  username: vhowa
+  name: Obaro
+- platform: x
+  username: cryptocatsansa
+  name: Sansa
+- platform: x
+  username: PaulieWizWit
+  name: Paulie Campione
+- platform: x
+  username: jany268
+  name: Quinn
+- platform: x
+  username: 0xsunnhi
+  name: Sunnhi
+- platform: x
+  username: yappchillguy999
+  name: Chill Guy l Yapp for passion
+- platform: x
+  username: iembesne
+  name: Embes
+- platform: x
+  username: yourwifejinx
+  name: jinx 💙
+- platform: x
+  username: hentsapreciator
+  name: Hents🔞(Promotions/Writer)
+- platform: x
+  username: HentaiCinema
+  name: Hentai Cinema {100K} ✨️
+- platform: x
+  username: SkyexSummers
+  name: SkyexSummers
+- platform: x
+  username: Linhcun123
+  name: Kiều Linh
+- platform: x
+  username: bapxinh18tui
+  name: Bắp 18+
+- platform: x
+  username: antaygymer
+  name: An Tây
+- platform: x
+  username: VnNguyn91063634
+  name: Vân Nguyễn
+- platform: x
+  username: phanduong2003
+  name: Dương Kim Phấn
+- platform: x
+  username: mailinh_1998
+  name: Huỳnh Mai Linh
+- platform: x
+  username: HuanggeP
+  name: HuangGe Photo
+- platform: x
+  username: CHIBI1300
+  name: CHIBI
+- platform: x
+  username: phamtrantran579
+  name: MACHENIC
+- platform: x
+  username: QuynhLee294
+  name: Pé Bạch Tuộc
+- platform: x
+  username: HongBienNews
+  name: Hóng Biến Đường Phố
+- platform: x
+  username: Yenchuoi9999
+  name: Trần Thị Huệ
+- platform: x
+  username: Nguyetcamduong
+  name: Dương Nguyệt Cầm
+- platform: x
+  username: chipxinhjp
+  name: Chíp Xinh
+- platform: x
+  username: yahiko_mori
+  name: Trần Thị Yến Nhi
+- platform: x
+  username: asianbabesVN
+  name: Vietnam Sexy Celebs
+- platform: x
+  username: meowcc4
+  name: meow zú bự gái ms
+- platform: x
+  username: embedaocute
+  name: Em bé Đào 🍑
+- platform: x
+  username: embee3tuoi
+  name: EM BÉ 👧🏻
+- platform: x
+  username: teamgirlsexpga
+  name: lầu nguyệt hội quán fwb / pga
+- platform: x
+  username: hanoifineartvn
+  name: Hanoi Fine Art
+- platform: x
+  username: ConfessionDoge
+  name: Tin Giải Trí | Confession
+- platform: x
+  username: Hai44899522
+  name: Q.Anh
+- platform: x
+  username: Gentermen_X
+  name: Quý Ngài GentX
+- platform: x
+  username: TNgoc_Hang
+  name: Trần Ngọc Hằng
+- platform: x
+  username: iamembesne
+  name: Embesne
+- platform: x
+  username: Trangdangg04
+  name: Đặng Trang
+- platform: x
+  username: MsLily2000
+  name: Lily Hong Nhung
+- platform: x
+  username: thuyanh987
+  name: Thùy Anh
+- platform: x
+  username: TThHuyn6
+  name: Ngọc Huyền
+- platform: x
+  username: mrhanoi2025
+  name: MR Hà Nội
+- platform: x
+  username: MrABCds
+  name: MrABCds
+- platform: x
+  username: Ngoc_Tin_92
+  name: Ngọc
+- platform: x
+  username: NguynTh78792555
+  name: Nguyễn Ngọc Kim Thảo
+- platform: x
+  username: trannguyenlena
+  name: Lê Na Quận 8 (Dâu Tây)
+- platform: x
+  username: vyle2003
+  name: Vy Lê
+- platform: x
+  username: ongchusinsu1
+  name: Ông Chú Sìn Sú (Tele @Ongchusinsu123)
+- platform: x
+  username: tom036543
+  name: Anh Di
+- platform: x
+  username: KINGOFGAMES3225
+  name: Diddy là con tao
+- platform: x
+  username: MaxVOAO
+  name: Max ✦
+- platform: x
+  username: Lakers
+  name: Los Angeles Lakers
+- platform: x
+  username: kitty3ioi
+  name: 小喵👸🏻baby🚒粤港澳
+- platform: x
+  username: NANL_S
+  name: 📸南篱_NL
+- platform: x
+  username: TofuMieA
+  name: 咩咩🐑TofuMieA
+- platform: x
+  username: haiyangself1
+  name: 司徒慧玲
+- platform: x
+  username: NBA
+  name: NBA
+- platform: x
+  username: diecomics
+  name: 李长生
+- platform: x
+  username: WhisperFrame
+  name: WhisperFrame 夜音
+- platform: x
+  username: master_uwurr
+  name: Master uwu 🔞
+- platform: x
+  username: ReT0ky0
+  name: Re:TOKYO MEMORY
+- platform: x
+  username: ashiuraten
+  name: あのこのあしうら写真展@足裏
+- platform: x
+  username: huangyabin0916
+  name: HUANGYABIN
+- platform: x
+  username: afravaaa
+  name: Afra🍦
+- platform: x
+  username: iFPixels
+  name: iFPixels
+- platform: x
+  username: pang__8
+  name: FRAGON
+- platform: x
+  username: ncmsncmsncms
+  name: ____Ncms
+- platform: x
+  username: seaduox
+  name: 解析度
+- platform: x
+  username: Desperadooo6
+  name: Desperadooo
+- platform: x
+  username: _deepskyy
+  name: Tat @_deepsky
+- platform: x
+  username: jkobari
+  name: J.Kobari
