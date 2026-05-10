@@ -25,14 +25,18 @@ def get_auth_headers():
 
 
 def get_user_tweets(screen_name, count=50):
-    """获取用户的最新推文"""
+    """获取用户的最新推文（使用 GraphQL API）"""
     headers = get_auth_headers()
 
-    # 先获取用户 ID
+    # 先获取用户 rest_id
+    query_id = "G3KGOASz96M-Qu0nwmGXNg"  # UserByScreenName
+    variables = f'{{"screen_name":"{screen_name}","withSafetyModeUserFields":true}}'
+    features = '{"hidden_profile_subscriptions_enabled":true,"rweb_tipjar_consumption_enabled":true,"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"subscriptions_verification_info_is_identity_verified_enabled":true,"subscriptions_verification_info_verified_since_enabled":true,"highlights_tweets_tab_ui_enabled":true,"responsive_web_twitter_article_notes_tab_enabled":true,"subscriptions_feature_can_gift_premium":true,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}'
+
     resp = requests.get(
-        "https://x.com/i/api/1.1/users/show.json",
+        f"https://x.com/i/api/graphql/{query_id}/UserByScreenName",
         headers=headers,
-        params={"screen_name": screen_name},
+        params={"variables": variables, "features": features},
         timeout=30,
     )
 
@@ -40,20 +44,21 @@ def get_user_tweets(screen_name, count=50):
         print(f"  [错误] 获取用户信息失败: {resp.status_code}")
         return []
 
-    user_id = resp.json().get("id_str")
+    user_data = resp.json().get("data", {}).get("user", {}).get("result", {})
+    user_id = user_data.get("rest_id")
     if not user_id:
+        print(f"  [错误] 无法获取用户 ID")
         return []
 
-    # 获取推文
+    # 获取推文（使用 UserTweets GraphQL）
+    tweets_query_id = "E3opETHurmVJflFsUBVuUQ"  # UserTweets
+    tweets_variables = f'{{"userId":"{user_id}","count":{count},"includePromotedContent":true,"withQuickPromoteEligibilityTweetFields":true,"withVoice":true,"withV2Timeline":true}}'
+    tweets_features = '{"rweb_tipjar_consumption_enabled":true,"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_timeline_navigation_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"communities_web_enable_tweet_community_results_fetch":true,"c9s_tweet_anatomy_moderator_badge_enabled":true,"articles_preview_enabled":true,"responsive_web_edit_tweet_api_enabled":true,"graphql_is_translatable_rweb_tweet_is_translatable_enabled":true,"view_counts_everywhere_api_enabled":true,"longform_notetweets_consumption_enabled":true,"responsive_web_twitter_article_tweet_consumption_enabled":true,"tweet_awards_web_tipping_enabled":true,"creator_subscriptions_quote_tweet_preview_enabled":false,"freedom_of_speech_not_reach_fetch_enabled":true,"standardized_nudges_misinfo":true,"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled":true,"rweb_video_timestamps_enabled":true,"longform_notetweets_rich_text_read_enabled":true,"longform_notetweets_inline_media_enabled":true,"responsive_web_enhance_cards_enabled":false}'
+
     resp = requests.get(
-        "https://x.com/i/api/1.1/statuses/user_timeline.json",
+        f"https://x.com/i/api/graphql/{tweets_query_id}/UserTweets",
         headers=headers,
-        params={
-            "user_id": user_id,
-            "count": count,
-            "tweet_mode": "extended",
-            "include_rts": "false",
-        },
+        params={"variables": tweets_variables, "features": tweets_features},
         timeout=30,
     )
 
@@ -61,7 +66,24 @@ def get_user_tweets(screen_name, count=50):
         print(f"  [错误] 获取推文失败: {resp.status_code}")
         return []
 
-    return resp.json()
+    # 解析 GraphQL 响应
+    tweets = []
+    data = resp.json().get("data", {}).get("user", {}).get("result", {})
+    timeline = data.get("timeline_v2", {}).get("timeline", {}).get("instructions", [])
+
+    for instruction in timeline:
+        entries = instruction.get("entries", [])
+        for entry in entries:
+            content = entry.get("content", {})
+            tweet_result = content.get("itemContent", {}).get("tweet_results", {}).get("result", {})
+            legacy = tweet_result.get("legacy", {})
+            if legacy:
+                tweets.append({
+                    "full_text": legacy.get("full_text", ""),
+                    "entities": legacy.get("entities", {}),
+                })
+
+    return tweets
 
 
 def extract_ig_usernames(text):
