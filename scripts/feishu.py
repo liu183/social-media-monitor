@@ -228,8 +228,8 @@ def build_daily_summary(entries):
     for account, items in by_account.items():
         media_items = [i for i in items if i.get("has_media")]
         lines.append(f"▎{account}: {len(items)} 条 (含媒体 {len(media_items)} 条)")
-        for item in items[:3]:  # 每个账号最多显示 3 条
-            title = item.get("title", "")[:50]
+        for item in items:
+            title = item.get("title", "")[:100]
             link = item.get("link", "")
             media_info = ""
             if item.get("download_count"):
@@ -237,8 +237,6 @@ def build_daily_summary(entries):
             lines.append(f"  • {title}{media_info}")
             if link:
                 lines.append(f"    {link}")
-        if len(items) > 3:
-            lines.append(f"  ... 还有 {len(items) - 3} 条")
         lines.append("")
 
     return "\n".join(lines)
