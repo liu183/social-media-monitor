@@ -1,0 +1,7 @@
+data/media/
+data/*.db
+data/*.json
+.env
+config/gallery-dl.conf
+__pycache__/
+*.pyc

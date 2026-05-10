@@ -1,0 +1,22 @@
+# 要监控的账号列表
+# 每个账号需要: platform, username, name(可选)
+# platform: x (Twitter) 或 instagram
+
+accounts:
+  # === X (Twitter) 账号 ===
+  - platform: x
+    username: "example_user1"
+    name: "示例用户1"
+
+  - platform: x
+    username: "example_user2"
+    name: "示例用户2"
+
+  # === Instagram 账号 ===
+  - platform: instagram
+    username: "example_ig1"
+    name: "示例IG用户1"
+
+  - platform: instagram
+    username: "example_ig2"
+    name: "示例IG用户2"
