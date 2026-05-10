@@ -8,6 +8,9 @@ on:
         required: false
         default: '3'
 
+permissions:
+  contents: write
+
 jobs:
   discover:
     runs-on: ubuntu-latest
