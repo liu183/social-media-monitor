@@ -2,12 +2,43 @@
 
 import os
 import yaml
+from pathlib import Path
 
 def load_accounts(path="config/accounts.yaml"):
     """加载账号列表"""
     with open(path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
     return data.get("accounts", [])
+
+def save_accounts(new_accounts, path="config/accounts.yaml"):
+    """保存新发现的账号到配置文件"""
+    # 读取现有配置
+    with open(path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+
+    existing = data.get("accounts", [])
+    existing_usernames = {a["username"].lower() for a in existing}
+
+    # 过滤已存在的账号
+    added = []
+    for acc in new_accounts:
+        if acc["username"].lower() not in existing_usernames:
+            # 只保留基本字段
+            entry = {
+                "platform": acc["platform"],
+                "username": acc["username"],
+                "name": acc.get("name", acc["username"]),
+            }
+            existing.append(entry)
+            existing_usernames.add(acc["username"].lower())
+            added.append(acc)
+
+    if added:
+        data["accounts"] = existing
+        with open(path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+
+    return added
 
 def get_rsshub_base():
     """获取 RSSHub 实例地址，支持自建或公共实例"""
