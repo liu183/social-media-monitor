@@ -430,12 +430,12 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     fname = os.path.basename(video_path)
 
-    # 上传文件
+    # 上传文件（file_type: opus/mp4/pdf/doc/xls/ppt/stream）
     with open(video_path, "rb") as f:
         resp = requests.post(
             "https://open.feishu.cn/open-apis/im/v1/files",
             headers={"Authorization": f"Bearer {token}"},
-            data={"file_type": "mp4", "file_name": fname},
+            data={"file_type": "stream", "file_name": fname},
             files={"file": f},
             timeout=120
         )
