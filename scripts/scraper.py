@@ -84,13 +84,15 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
 
     print(f"  [抓取] {url}")
 
-    # 构建配置
+    # 构建配置，写入临时文件
     config = build_gallery_dl_config(platform, cookies)
-
-    # 写入临时配置文件
-    conf_path = os.path.join(output_dir, f".gdl-{platform}-{username}.json")
-    with open(conf_path, "w") as f:
-        json.dump(config, f)
+    conf_fd, conf_path = tempfile.mkstemp(suffix=".json", prefix=f"gdl-{platform}-")
+    try:
+        with os.fdopen(conf_fd, "w") as f:
+            json.dump(config, f)
+    except:
+        os.close(conf_fd)
+        raise
 
     # 构建命令
     cmd = [
@@ -109,7 +111,6 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
             capture_output=True,
             text=True,
             timeout=180,  # 3 分钟超时
-            cwd=output_dir,
         )
 
         if result.returncode == 0:
