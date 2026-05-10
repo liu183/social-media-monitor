@@ -26,32 +26,35 @@ jobs:
           pip install -r requirements.txt
           pip install yt-dlp
 
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: data/state.json
+          key: monitor-state-
+          restore-keys: |
+            monitor-state-
+
       - name: Run monitor
         env:
-          # 飞书 Webhook（必填，用于群消息推送）
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
-
-          # 飞书应用凭证（可选，用于 Bot API 和多维表格）
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
-
-          # 飞书多维表格（可选）
           FEISHU_BITABLE_APP_TOKEN: ${{ secrets.FEISHU_BITABLE_APP_TOKEN }}
           FEISHU_BITABLE_TABLE_ID: ${{ secrets.FEISHU_BITABLE_TABLE_ID }}
-
-          # 飞书群聊 ID（可选，用于 Bot 发消息到群）
           FEISHU_CHAT_ID: ${{ secrets.FEISHU_CHAT_ID }}
-
-          # X/Twitter Cookies（强烈建议配置，否则无法抓取）
           X_AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
           X_CT0: ${{ secrets.X_CT0 }}
-
-          # Instagram Cookies（强烈建议配置，否则无法抓取）
           IG_SESSION_ID: ${{ secrets.IG_SESSION_ID }}
           IG_DS_USER_ID: ${{ secrets.IG_DS_USER_ID }}
           IG_CSRFTOKEN: ${{ secrets.IG_CSRFTOKEN }}
-
         run: python -m scripts.main
+
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/state.json
+          key: monitor-state-${{ github.run_number }}
 
       - name: Upload media artifacts
         if: always()
@@ -61,19 +64,3 @@ jobs:
           path: data/media/
           retention-days: 3
           if-no-files-found: ignore
-
-      - name: Save state
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: data/state.json
-          key: monitor-state-${{ github.run_number }}
-
-      - name: Restore state
-        if: always()
-        uses: actions/cache/restore@v4
-        with:
-          path: data/state.json
-          key: monitor-state-
-          restore-keys: |
-            monitor-state-
