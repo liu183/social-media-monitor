@@ -430,12 +430,12 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     fname = os.path.basename(video_path)
 
-    # 上传为临时素材（file_type: media，用于卡片播放）
+    # 上传视频文件（file_type 必须是: opus/mp4/pdf/doc/xls/ppt/stream）
     with open(video_path, "rb") as f:
         resp = requests.post(
             "https://open.feishu.cn/open-apis/im/v1/files",
             headers={"Authorization": f"Bearer {token}"},
-            data={"file_type": "media", "file_name": fname},
+            data={"file_type": "mp4", "file_name": fname},
             files={"file": f},
             timeout=120
         )
@@ -446,25 +446,8 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     file_key = data["data"]["file_key"]
 
-    # 用卡片消息发送（可直接预览播放）
-    card = {
-        "header": {
-            "title": {
-                "tag": "plain_text",
-                "content": f"@{account_name} 的视频"
-            },
-            "template": "purple"
-        },
-        "elements": [
-            {
-                "tag": "media",
-                "img_key": file_key,  # 视频用 img_key 字段
-                "file_key": file_key,
-                "preview": True
-            }
-        ]
-    }
-
+    # 发送文件消息（飞书客户端可直接预览播放视频）
+    content = {"file_key": file_key}
     resp = requests.post(
         "https://open.feishu.cn/open-apis/im/v1/messages",
         params={"receive_id_type": "chat_id"},
@@ -474,14 +457,14 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
         },
         json={
             "receive_id": chat_id,
-            "msg_type": "interactive",
-            "content": json.dumps(card)
+            "msg_type": "file",
+            "content": json.dumps(content)
         },
         timeout=30
     )
     result = resp.json()
     if result.get("code") == 0:
-        print(f"  [OK] 视频卡片已发送: {fname}")
+        print(f"  [OK] 视频已发送: {fname}")
         return True
-    print(f"  [WARN] 视频卡片发送失败: {result}")
+    print(f"  [WARN] 视频发送失败: {result}")
     return False
