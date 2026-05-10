@@ -78,6 +78,7 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
     返回: list of dict，每个 dict 包含文件信息
     """
     url = f"https://x.com/{username}" if platform == "x" else f"https://www.instagram.com/{username}/"
+    os.makedirs(output_dir, exist_ok=True)
     user_dir = os.path.join(output_dir, platform, username)
     os.makedirs(user_dir, exist_ok=True)
 
