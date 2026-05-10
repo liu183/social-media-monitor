@@ -193,17 +193,17 @@ def run(dry_run=False, max_per_account=30):
     else:
         print("[Webhook] 未配置 FEISHU_WEBHOOK_URL，跳过")
 
-    # 2.2 逐条发送帖子（图片+说明+链接）
+    # 2.2 逐条发送帖子（图片+视频+说明+链接）
     creds = get_feishu_app_credentials()
+    chat_id = get_feishu_chat_id()
     bot = None
     if creds["app_id"] and creds["app_secret"]:
         bot = FeishuBot(creds["app_id"], creds["app_secret"])
         print(f"[帖子] 逐条发送 {len(entries)} 个帖子到飞书群...")
-        send_post_to_feishu(webhook, bot, entries)
+        send_post_to_feishu(webhook, bot, chat_id, entries)
         print("[帖子] 发送完成")
     elif webhook:
         print("[帖子] 未配置飞书应用凭证，无法上传图片，仅发送文字")
-        # 降级：只发文字版
         for entry in entries:
             text = f"@{entry.get('account_name', '')}: {entry.get('title', '')[:80]}"
             if entry.get("link"):
