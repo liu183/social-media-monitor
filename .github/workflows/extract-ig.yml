@@ -1,0 +1,41 @@
+name: Extract IG Accounts
+
+on:
+  schedule:
+    # 每天 UTC 01:00 (北京时间 09:00)，在主任务前运行
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pyyaml
+
+      - name: Extract IG accounts
+        env:
+          X_AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
+          X_CT0: ${{ secrets.X_CT0 }}
+        run: python -m scripts.main --extract-ig --source=my_ig_select
+
+      - name: Commit updated accounts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/accounts.yaml
+          git diff --cached --quiet || git commit -m "auto: extract IG accounts from @my_ig_select"
+          git push
