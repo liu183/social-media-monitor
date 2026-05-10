@@ -84,6 +84,8 @@ def scrape_videos_with_ytdlp(username, platform, output_dir, cookies=None, max_i
         "yt-dlp",
         "--no-playlist",
         "--no-overwrites",
+        "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+        "--merge-output-format", "mp4",
         "-o", os.path.join(video_dir, "%(id)s.%(ext)s"),
         "--max-downloads", str(max_items),
         "--match-filter", "duration>0",  # 只下载有视频的
