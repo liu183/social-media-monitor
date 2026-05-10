@@ -101,7 +101,7 @@ def prepare_entries_for_feishu(new_results):
                     "platform": account["platform"],
                     "username": account["username"],
                     "account_name": account.get("name", account["username"]),
-                    "title": meta.get("description", meta.get("content", ""))[:100],
+                    "title": (meta.get("description") or meta.get("content") or "")[:100],
                     "link": meta.get("post_url", meta.get("url", "")),
                     "published": meta.get("date", ""),
                     "images": [],
