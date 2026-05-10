@@ -166,3 +166,8 @@ accounts:
   - platform: x
     username: "Fxtyoo"
     name: "Fxtyoo"
+
+  # === Instagram 账号 ===
+  - platform: instagram
+    username: "carrieqinnn"
+    name: "Carrie Qin"
