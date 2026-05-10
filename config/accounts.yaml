@@ -5,18 +5,18 @@
 accounts:
   # === X (Twitter) 账号 ===
   - platform: x
-    username: "example_user1"
-    name: "示例用户1"
+    username: "elonmusk"
+    name: "Elon Musk"
 
   - platform: x
-    username: "example_user2"
-    name: "示例用户2"
+    username: "NASA"
+    name: "NASA"
 
   # === Instagram 账号 ===
   - platform: instagram
-    username: "example_ig1"
-    name: "示例IG用户1"
+    username: "natgeo"
+    name: "National Geographic"
 
   - platform: instagram
-    username: "example_ig2"
-    name: "示例IG用户2"
+    username: "nasa"
+    name: "NASA"
