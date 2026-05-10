@@ -334,7 +334,7 @@ def push_to_bitable(bitable, entries):
 def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
     """
     将每个帖子作为富文本消息发送到飞书群
-    优先用 Bot API（支持视频），降级用 Webhook（仅图片+文字）
+    每个帖子: 说明 + 图片 + 视频（紧跟在一起）
     """
     if not entries:
         return
@@ -351,7 +351,7 @@ def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
         # 构建富文本内容
         content_lines = []
 
-        # 第一行：账号信息和帖子说明
+        # 账号信息和帖子说明
         icon = "🐦" if platform == "x" else "📷"
         header = f"{icon} @{account_name}"
         if title:
@@ -379,18 +379,9 @@ def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
                 {"tag": "a", "text": "查看原文", "href": link}
             ])
 
-        # 视频
-        if video_files:
-            content_lines.append([{"tag": "text", "text": f"🎬 包含 {len(video_files)} 个视频:"}])
-            for vf in video_files[:5]:
-                fname = os.path.basename(vf)
-                fsize = os.path.getsize(vf) / 1024 / 1024
-                content_lines.append([{"tag": "text", "text": f"  📹 {fname} ({fsize:.1f}MB)"}])
-
-        # 发送
+        # 发送帖子说明+图片
         post_title = f"@{account_name}"
         if bot and chat_id:
-            # 用 Bot API 发送（支持更丰富的内容）
             content = {
                 "zh_cn": {
                     "title": post_title,
@@ -399,27 +390,24 @@ def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
             }
             bot.send_to_chat(chat_id, "post", content)
         elif webhook:
-            # 降级用 Webhook
             webhook.send_rich_text(post_title, content_lines)
 
-        time.sleep(1)  # 避免频率限制
+        time.sleep(0.5)
 
-    # 最后发视频文件（Bot API 支持发送文件）
-    if bot and chat_id:
-        for entry in entries:
-            local_files = entry.get("local_files", [])
-            video_files = [f for f in local_files if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))]
-            account_name = entry.get("account_name", entry.get("username", ""))
+        # 紧跟着发送这个帖子的视频
+        if bot and chat_id and video_files:
             for vf in video_files[:3]:
                 try:
                     fsize = os.path.getsize(vf) / 1024 / 1024
-                    if fsize > 30:  # 飞书文件限制约30MB
+                    if fsize > 30:
                         print(f"  [跳过] 视频过大: {os.path.basename(vf)} ({fsize:.1f}MB)")
                         continue
                     upload_video_to_bot(bot, chat_id, vf, account_name)
                 except Exception as e:
                     print(f"  [WARN] 视频发送失败: {e}")
-                time.sleep(1)
+                time.sleep(0.5)
+
+        time.sleep(0.5)  # 帖子间间隔
 
 
 def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
