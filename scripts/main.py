@@ -243,15 +243,52 @@ def run(dry_run=False, max_per_account=30):
 if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv
     discover_mode = "--discover" in sys.argv
+    extract_ig_mode = "--extract-ig" in sys.argv
     max_items = 30
     max_pages = 3
+    ig_source = "my_ig_select"
     for arg in sys.argv:
         if arg.startswith("--max="):
             max_items = int(arg.split("=")[1])
         if arg.startswith("--pages="):
             max_pages = int(arg.split("=")[1])
+        if arg.startswith("--source="):
+            ig_source = arg.split("=")[1]
 
-    if discover_mode:
+    if extract_ig_mode:
+        from scripts.extract_ig import extract_ig_from_source
+        from scripts.config import save_accounts
+
+        print(f"{'='*50}")
+        print(f"从 @{ig_source} 提取 IG 账号")
+        print(f"{'='*50}")
+
+        ig_usernames = extract_ig_from_source(ig_source, count=100)
+
+        if ig_usernames:
+            accounts = load_accounts()
+            existing_usernames = {a["username"].lower() for a in accounts}
+            new_usernames = [u for u in ig_usernames if u.lower() not in existing_usernames]
+
+            print(f"\n找到 {len(new_usernames)} 个新 IG 账号")
+
+            new_accounts = []
+            for username in new_usernames:
+                new_accounts.append({
+                    "platform": "instagram",
+                    "username": username,
+                    "name": username,
+                })
+
+            if new_accounts:
+                added = save_accounts(new_accounts)
+                print(f"已添加 {len(added)} 个 IG 账号到 accounts.yaml")
+            else:
+                print("没有新账号需要添加")
+        else:
+            print("未找到 IG 账号")
+
+    elif discover_mode:
         from scripts.discover import discover_all, format_discovery_report
         from scripts.config import save_accounts
 
