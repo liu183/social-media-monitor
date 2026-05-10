@@ -392,11 +392,9 @@ def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
         if bot and chat_id:
             # 用 Bot API 发送（支持更丰富的内容）
             content = {
-                "post": {
-                    "zh_cn": {
-                        "title": post_title,
-                        "content": content_lines
-                    }
+                "zh_cn": {
+                    "title": post_title,
+                    "content": content_lines
                 }
             }
             bot.send_to_chat(chat_id, "post", content)
