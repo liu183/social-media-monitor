@@ -430,7 +430,7 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     fname = os.path.basename(video_path)
 
-    # 上传视频文件（file_type 必须是: opus/mp4/pdf/doc/xls/ppt/stream）
+    # 上传视频文件（file_type: mp4）
     with open(video_path, "rb") as f:
         resp = requests.post(
             "https://open.feishu.cn/open-apis/im/v1/files",
@@ -446,7 +446,7 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     file_key = data["data"]["file_key"]
 
-    # 发送文件消息（飞书客户端可直接预览播放视频）
+    # 用 msg_type=media 发送视频（可直接播放）
     content = {"file_key": file_key}
     resp = requests.post(
         "https://open.feishu.cn/open-apis/im/v1/messages",
@@ -457,7 +457,7 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
         },
         json={
             "receive_id": chat_id,
-            "msg_type": "file",
+            "msg_type": "media",
             "content": json.dumps(content)
         },
         timeout=30
