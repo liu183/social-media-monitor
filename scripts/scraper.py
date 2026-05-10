@@ -186,6 +186,9 @@ def scrape_all_accounts(accounts, base_dir, max_per_account=30):
 
         cookies = get_cookies(platform)
         if not cookies:
+            if platform == "instagram":
+                print(f"  [跳过] Instagram 需要 cookies，未配置")
+                continue
             print(f"  [警告] 未配置 {platform} cookies，可能无法获取内容")
 
         files = scrape_user_media(
