@@ -423,19 +423,19 @@ def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
 
 
 def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
-    """上传视频文件到飞书并通过 Bot 发送"""
+    """上传视频并通过卡片消息发送（可直接预览播放）"""
     token = bot.get_tenant_access_token()
     if not token:
         return False
 
     fname = os.path.basename(video_path)
 
-    # 上传文件（file_type: opus/mp4/pdf/doc/xls/ppt/stream）
+    # 上传为临时素材（file_type: media，用于卡片播放）
     with open(video_path, "rb") as f:
         resp = requests.post(
             "https://open.feishu.cn/open-apis/im/v1/files",
             headers={"Authorization": f"Bearer {token}"},
-            data={"file_type": "stream", "file_name": fname},
+            data={"file_type": "media", "file_name": fname},
             files={"file": f},
             timeout=120
         )
@@ -446,8 +446,25 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
 
     file_key = data["data"]["file_key"]
 
-    # 发送文件消息
-    content = {"file_key": file_key}
+    # 用卡片消息发送（可直接预览播放）
+    card = {
+        "header": {
+            "title": {
+                "tag": "plain_text",
+                "content": f"@{account_name} 的视频"
+            },
+            "template": "purple"
+        },
+        "elements": [
+            {
+                "tag": "media",
+                "img_key": file_key,  # 视频用 img_key 字段
+                "file_key": file_key,
+                "preview": True
+            }
+        ]
+    }
+
     resp = requests.post(
         "https://open.feishu.cn/open-apis/im/v1/messages",
         params={"receive_id_type": "chat_id"},
@@ -457,14 +474,14 @@ def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
         },
         json={
             "receive_id": chat_id,
-            "msg_type": "file",
-            "content": json.dumps(content)
+            "msg_type": "interactive",
+            "content": json.dumps(card)
         },
         timeout=30
     )
     result = resp.json()
     if result.get("code") == 0:
-        print(f"  [OK] 视频已发送: {fname}")
+        print(f"  [OK] 视频卡片已发送: {fname}")
         return True
-    print(f"  [WARN] 视频发送失败: {result}")
+    print(f"  [WARN] 视频卡片发送失败: {result}")
     return False
