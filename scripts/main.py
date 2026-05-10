@@ -242,8 +242,34 @@ def run(dry_run=False, max_per_account=30):
 
 if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv
+    discover_mode = "--discover" in sys.argv
     max_items = 30
+    max_pages = 3
     for arg in sys.argv:
         if arg.startswith("--max="):
             max_items = int(arg.split("=")[1])
-    run(dry_run=dry_run, max_per_account=max_items)
+        if arg.startswith("--pages="):
+            max_pages = int(arg.split("=")[1])
+
+    if discover_mode:
+        from scripts.discover import discover_all, format_discovery_report
+        from scripts.config import save_accounts
+
+        accounts = load_accounts()
+        print(f"当前配置 {len(accounts)} 个账号")
+        print(f"{'='*50}")
+        print("账号发现模式")
+        print(f"{'='*50}")
+
+        new_accounts = discover_all(accounts, max_pages_per_account=max_pages)
+
+        if new_accounts:
+            print(f"\n发现 {len(new_accounts)} 个新账号")
+            print(format_discovery_report(new_accounts))
+
+            added = save_accounts(new_accounts)
+            print(f"\n已添加 {len(added)} 个新账号到 accounts.yaml")
+        else:
+            print("\n未发现新账号")
+    else:
+        run(dry_run=dry_run, max_per_account=max_items)
