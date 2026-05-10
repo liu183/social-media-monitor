@@ -331,10 +331,10 @@ def push_to_bitable(bitable, entries):
         time.sleep(1)  # 避免频率限制
 
 
-def send_post_to_feishu(webhook, bot, entries, max_images_per_post=9):
+def send_post_to_feishu(webhook, bot, chat_id, entries, max_images_per_post=9):
     """
     将每个帖子作为富文本消息发送到飞书群
-    包含：帖子说明 + 图片 + 原文链接 + 视频链接
+    优先用 Bot API（支持视频），降级用 Webhook（仅图片+文字）
     """
     if not entries:
         return
@@ -344,40 +344,33 @@ def send_post_to_feishu(webhook, bot, entries, max_images_per_post=9):
         link = entry.get("link", "")
         account_name = entry.get("account_name", entry.get("username", ""))
         platform = entry.get("platform", "")
-        images = entry.get("local_files", [])
-        videos = entry.get("videos", [])
-        image_files = [f for f in images if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))]
-        video_files = [f for f in images if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))]
+        local_files = entry.get("local_files", [])
+        image_files = [f for f in local_files if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))]
+        video_files = [f for f in local_files if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))]
 
         # 构建富文本内容
         content_lines = []
 
-        # 第一行：账号信息和说明
-        header_parts = []
-        if platform == "x":
-            header_parts.append(f"🐦 @{account_name}")
-        else:
-            header_parts.append(f"📷 @{account_name}")
-
+        # 第一行：账号信息和帖子说明
+        icon = "🐦" if platform == "x" else "📷"
+        header = f"{icon} @{account_name}"
         if title:
-            header_parts.append(title)
+            header += f"\n{title}"
+        content_lines.append([{"tag": "text", "text": header}])
 
-        content_lines.append([{"tag": "text", "text": " | ".join(header_parts)}])
-
-        # 上传图片并添加到富文本
+        # 上传图片
+        img_keys = []
         if bot and image_files:
-            img_keys = []
             for img_path in image_files[:max_images_per_post]:
                 image_key = bot.upload_image(img_path)
                 if image_key:
                     img_keys.append(image_key)
                 time.sleep(0.3)
 
-            if img_keys:
-                img_line = []
-                for key in img_keys:
-                    img_line.append({"tag": "img", "image_key": key})
-                content_lines.append(img_line)
+        # 图片行
+        if img_keys:
+            img_line = [{"tag": "img", "image_key": key} for key in img_keys]
+            content_lines.append(img_line)
 
         # 原文链接
         if link:
@@ -386,14 +379,94 @@ def send_post_to_feishu(webhook, bot, entries, max_images_per_post=9):
                 {"tag": "a", "text": "查看原文", "href": link}
             ])
 
-        # 视频链接
+        # 视频
         if video_files:
-            content_lines.append([{"tag": "text", "text": f"🎬 包含 {len(video_files)} 个视频"}])
-            for vf in video_files[:3]:
+            content_lines.append([{"tag": "text", "text": f"🎬 包含 {len(video_files)} 个视频:"}])
+            for vf in video_files[:5]:
                 fname = os.path.basename(vf)
-                content_lines.append([{"tag": "text", "text": f"  📹 {fname}"}])
+                fsize = os.path.getsize(vf) / 1024 / 1024
+                content_lines.append([{"tag": "text", "text": f"  📹 {fname} ({fsize:.1f}MB)"}])
 
-        # 发送富文本
+        # 发送
         post_title = f"@{account_name}"
-        webhook.send_rich_text(post_title, content_lines)
+        if bot and chat_id:
+            # 用 Bot API 发送（支持更丰富的内容）
+            content = {
+                "post": {
+                    "zh_cn": {
+                        "title": post_title,
+                        "content": content_lines
+                    }
+                }
+            }
+            bot.send_to_chat(chat_id, "post", content)
+        elif webhook:
+            # 降级用 Webhook
+            webhook.send_rich_text(post_title, content_lines)
+
         time.sleep(1)  # 避免频率限制
+
+    # 最后发视频文件（Bot API 支持发送文件）
+    if bot and chat_id:
+        for entry in entries:
+            local_files = entry.get("local_files", [])
+            video_files = [f for f in local_files if f.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))]
+            account_name = entry.get("account_name", entry.get("username", ""))
+            for vf in video_files[:3]:
+                try:
+                    fsize = os.path.getsize(vf) / 1024 / 1024
+                    if fsize > 30:  # 飞书文件限制约30MB
+                        print(f"  [跳过] 视频过大: {os.path.basename(vf)} ({fsize:.1f}MB)")
+                        continue
+                    upload_video_to_bot(bot, chat_id, vf, account_name)
+                except Exception as e:
+                    print(f"  [WARN] 视频发送失败: {e}")
+                time.sleep(1)
+
+
+def upload_video_to_bot(bot, chat_id, video_path, account_name=""):
+    """上传视频文件到飞书并通过 Bot 发送"""
+    token = bot.get_tenant_access_token()
+    if not token:
+        return False
+
+    fname = os.path.basename(video_path)
+
+    # 上传文件
+    with open(video_path, "rb") as f:
+        resp = requests.post(
+            "https://open.feishu.cn/open-apis/im/v1/files",
+            headers={"Authorization": f"Bearer {token}"},
+            data={"file_type": "mp4", "file_name": fname},
+            files={"file": f},
+            timeout=120
+        )
+    data = resp.json()
+    if data.get("code") != 0:
+        print(f"  [WARN] 视频上传失败: {data}")
+        return False
+
+    file_key = data["data"]["file_key"]
+
+    # 发送文件消息
+    content = {"file_key": file_key}
+    resp = requests.post(
+        "https://open.feishu.cn/open-apis/im/v1/messages",
+        params={"receive_id_type": "chat_id"},
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "receive_id": chat_id,
+            "msg_type": "file",
+            "content": json.dumps(content)
+        },
+        timeout=30
+    )
+    result = resp.json()
+    if result.get("code") == 0:
+        print(f"  [OK] 视频已发送: {fname}")
+        return True
+    print(f"  [WARN] 视频发送失败: {result}")
+    return False
