@@ -23,6 +23,7 @@ from scripts.feishu import (
     build_daily_summary,
     build_card_message,
     push_to_bitable,
+    send_post_to_feishu,
 )
 
 # 数据目录
@@ -177,45 +178,40 @@ def run(dry_run=False, max_per_account=30):
     print("第二步: 推送到飞书")
     print(f"{'='*50}")
 
-    # 2.1 Webhook 群消息
+    # 2.1 Webhook 群消息 - 每日摘要
     webhook_url = get_feishu_webhook()
-    if webhook_url:
-        print("[Webhook] 发送每日摘要...")
-        webhook = FeishuWebhook(webhook_url)
+    webhook = FeishuWebhook(webhook_url) if webhook_url else None
 
-        # 文本摘要
+    if webhook:
+        print("[Webhook] 发送每日摘要...")
         summary = build_daily_summary(entries)
         webhook.send_text(summary)
         time.sleep(1)
-
-        # 卡片消息
         card = build_card_message(entries)
         webhook.send_interactive(card)
-
-        print("[Webhook] 完成")
+        print("[Webhook] 摘要已发送")
     else:
         print("[Webhook] 未配置 FEISHU_WEBHOOK_URL，跳过")
 
-    # 2.2 Bot 消息（发送图片到群）
+    # 2.2 逐条发送帖子（图片+说明+链接）
     creds = get_feishu_app_credentials()
-    chat_id = get_feishu_chat_id()
-    if creds["app_id"] and creds["app_secret"] and chat_id:
-        print("[Bot] 上传并发送图片...")
+    bot = None
+    if creds["app_id"] and creds["app_secret"]:
         bot = FeishuBot(creds["app_id"], creds["app_secret"])
-
-        img_count = 0
+        print(f"[帖子] 逐条发送 {len(entries)} 个帖子到飞书群...")
+        send_post_to_feishu(webhook, bot, entries)
+        print("[帖子] 发送完成")
+    elif webhook:
+        print("[帖子] 未配置飞书应用凭证，无法上传图片，仅发送文字")
+        # 降级：只发文字版
         for entry in entries:
-            for img_path in entry.get("local_files", []):
-                if img_path.lower().endswith((".jpg", ".jpeg", ".png", ".gif")):
-                    image_key = bot.upload_image(img_path)
-                    if image_key:
-                        bot.send_to_chat(chat_id, "image", {"image_key": image_key})
-                        img_count += 1
-                        time.sleep(0.5)  # 频率限制
-
-        print(f"[Bot] 发送了 {img_count} 张图片")
+            text = f"@{entry.get('account_name', '')}: {entry.get('title', '')[:80]}"
+            if entry.get("link"):
+                text += f"\n{entry['link']}"
+            webhook.send_text(text)
+            time.sleep(0.5)
     else:
-        print("[Bot] 未配置飞书应用凭证，跳过")
+        print("[帖子] 未配置飞书凭证，跳过")
 
     # 2.3 多维表格归档
     bitable_info = get_feishu_bitable_info()
