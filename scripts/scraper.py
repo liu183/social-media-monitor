@@ -26,7 +26,7 @@ def get_cookies(platform):
     return None
 
 
-def build_gallery_dl_config(platform, cookies):
+def build_gallery_dl_config(platform, cookies, archive_path=None):
     """构建 gallery-dl 临时配置文件"""
     config = {
         "extractor": {
@@ -49,7 +49,6 @@ def build_gallery_dl_config(platform, cookies):
                 "videos": True,
             } if platform == "x" else {},
             "instagram": {
-                "archive": None,
                 "include": "posts",
                 "videos": True,
                 "unique": True,
@@ -61,6 +60,13 @@ def build_gallery_dl_config(platform, cookies):
             "log": {"level": "error"},
         },
     }
+
+    # 使用 archive 模式记录已下载的 URL，避免重复下载
+    if archive_path:
+        if platform == "x":
+            config["extractor"]["twitter"]["archive"] = archive_path
+        elif platform == "instagram":
+            config["extractor"]["instagram"]["archive"] = archive_path
 
     if cookies:
         if platform == "x":
@@ -108,7 +114,7 @@ def scrape_videos_with_ytdlp(username, platform, output_dir, cookies=None, max_i
             cmd,
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=120,
         )
         # 扫描下载的视频文件
         videos = []
@@ -137,7 +143,7 @@ def scrape_videos_with_ytdlp(username, platform, output_dir, cookies=None, max_i
             os.remove(cookie_file)
 
 
-def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None):
+def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None, archive_dir=None):
     """
     使用 gallery-dl 抓取用户媒体
 
@@ -150,8 +156,14 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
 
     print(f"  [抓取] {url}")
 
+    # archive 文件记录已下载的 URL hash，避免重复下载
+    archive_path = None
+    if archive_dir:
+        os.makedirs(archive_dir, exist_ok=True)
+        archive_path = os.path.join(archive_dir, f"{platform}_{username}.db")
+
     # 构建配置，写入临时文件
-    config = build_gallery_dl_config(platform, cookies)
+    config = build_gallery_dl_config(platform, cookies, archive_path)
     conf_fd, conf_path = tempfile.mkstemp(suffix=".json", prefix=f"gdl-{platform}-")
     try:
         with os.fdopen(conf_fd, "w") as f:
@@ -176,7 +188,7 @@ def scrape_user_media(username, platform, output_dir, max_items=30, cookies=None
             cmd,
             capture_output=True,
             text=True,
-            timeout=180,  # 3 分钟超时
+            timeout=90,
         )
 
         if result.returncode == 0:
@@ -248,14 +260,33 @@ def scan_downloaded_files(directory):
     return results
 
 
-def scrape_all_accounts(accounts, base_dir, max_per_account=30):
+def scrape_all_accounts(accounts, base_dir, max_per_account=30, state=None):
     """抓取所有账号的媒体"""
     all_results = {}
+    archive_dir = os.path.join(os.path.dirname(base_dir), "archive")
+
+    # 增量模式：跳过今天已成功抓取的账号
+    last_scraped = {}
+    if state:
+        last_scraped = state.get("last_scraped", {})
+        today = datetime.now().strftime("%Y-%m-%d")
+        skipped = 0
+        for account in accounts:
+            key = f"{account['platform']}:{account['username']}"
+            if last_scraped.get(key, {}).get("date") == today:
+                skipped += 1
+        if skipped:
+            print(f"[增量] 跳过今天已抓取的 {skipped} 个账号")
 
     for account in accounts:
         platform = account["platform"]
         username = account["username"]
         name = account.get("name", username)
+        key = f"{platform}:{username}"
+
+        # 增量模式：跳过今天已抓取的账号
+        if last_scraped.get(key, {}).get("date") == datetime.now().strftime("%Y-%m-%d"):
+            continue
 
         print(f"\n[账号] {name} ({platform}: @{username})")
 
@@ -272,6 +303,7 @@ def scrape_all_accounts(accounts, base_dir, max_per_account=30):
             output_dir=base_dir,
             max_items=max_per_account,
             cookies=cookies,
+            archive_dir=archive_dir,
         )
 
         all_results[f"{platform}:{username}"] = {
@@ -279,5 +311,14 @@ def scrape_all_accounts(accounts, base_dir, max_per_account=30):
             "files": files,
             "count": len(files),
         }
+
+        # 记录抓取时间
+        if state is not None:
+            if "last_scraped" not in state:
+                state["last_scraped"] = {}
+            state["last_scraped"][key] = {
+                "date": datetime.now().strftime("%Y-%m-%d"),
+                "count": len(files),
+            }
 
     return all_results

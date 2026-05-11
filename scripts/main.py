@@ -153,7 +153,7 @@ def run(dry_run=False, max_per_account=30):
         scrape_results = {}
     else:
         scrape_results = scrape_all_accounts(
-            accounts, str(MEDIA_DIR), max_per_account
+            accounts, str(MEDIA_DIR), max_per_account, state=state
         )
 
     # 统计
