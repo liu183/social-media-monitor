@@ -755,3 +755,6 @@ accounts:
 - platform: instagram
   username: com.tw01
   name: com.tw01
+- platform: instagram
+  username: jiayi.1020
+  name: jiayi.1020
